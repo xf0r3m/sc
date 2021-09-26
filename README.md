@@ -1,6 +1,6 @@
 # SC - SiteCatalog
 
-__SiteCatalog__ - jest sposobem na przechowywanie zakładek w chmurze, dostępnych na każdym urządzeniu. Za pomocą przeglądarki sieci web. W pełni napisany w PHP. Dla designu oraz funkcjonowania, nie których elementów wykorzystano bibliotekę Bootstrap 4. Aplikacja oparta jest o przechowywanie danych w formacie JSON.
+__SiteCatalog__ - jest sposobem na przechowywanie odnośników do stron (katalog stron), dostępnych na każdym urządzeniu. Za pomocą przeglądarki sieci web. W pełni napisany w PHP. Dla designu oraz funkcjonowania, nie których elementów wykorzystano bibliotekę Bootstrap 4. Aplikacja oparta jest o przechowywanie danych w formacie JSON.
 
 __Wymagania:__
 
@@ -10,7 +10,7 @@ __Instalacja (czynności wykonujemy jako root):__
 
 1. Instalujemy LAMP stack.
 2. cd _katalog serwera www_
-3. git clone https://git.morketsmerke.net/xf0r3m/sc
+3. git clone https://github.com/xf0r3m/sc
 4. cd sc
 5. mv * ..
 6. chown -R www-data:www-data _katalog serwera www_
