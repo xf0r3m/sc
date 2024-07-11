@@ -10,11 +10,9 @@
     }
     if ( isset($passHash) ) {
       if ( password_verify($_POST['pass'], $passHash) ) {
-        if (session_status() != 2) {
           session_start();
           $_SESSION['username'] = $_POST['user'];
           header("Location: index.php");
-        }
       } else {
         header("Location: index.php?a=login&result=1");
       }
