@@ -37,3 +37,17 @@
 .delForms {
   display: inline;
 }
+
+.moveSelect {
+  display: inline;
+  width: 37%;
+  margin-right: 20px;
+}
+
+.moveButton {
+  margin-bottom: 5px;
+}
+
+.moveForm {
+  margin-top: 16px;
+}

@@ -122,6 +122,13 @@
           </div>
           <ul class="list-group list-group-flush">
             <?php
+              #Przeniesienie strony do innej kategorii
+              if ( isset($_POST['newCateId']) ) {
+                $tableName = "sites";
+                $setValue = "cateId = " . mysqli_real_escape_string($connection, $_POST['newCateId']);
+                $whereValue = "id = " . mysqli_real_escape_string($connection, $_POST['movedSiteId']);
+                $result = dbUpdate($connection, $tableName, $setValue, $whereValue); 
+              }
               #Usunięcie strony
               if ( isset($_POST['siteId']) ) {
                 $tableName = "sites";
@@ -151,7 +158,24 @@
                   <input type=\"hidden\" name=\"siteId\" value=\"" . $row[0] . "\">
                   <button type=\"submit\" class=\"btn btn-danger deleteButton\" title=\"Usuń\">&times;</button>
                   </form>
-                  <a href=\"" . $row[2] . "\">". $row[1] . "</a></li>";
+                  <a href=\"" . $row[2] . "\">". $row[1] . "</a>";
+                  echo "<form class=\"moveForm\" action=\"" . $_SERVER['REQUEST_URI'] . "\" method=\"post\">";
+                  echo "<input type=\"hidden\" name=\"movedSiteId\" value=\"" . $row[0] . "\">";
+                  echo "<select class=\"form-select moveSelect\" name=\"newCateId\">";
+                  echo "<option></option>";
+                    $tableName = 'categories';
+                    $columnScheme = "id,name";
+                    $whereValue = "1=1";
+                    $result2 = dbQuery($connection, $tableName, $columnScheme, $whereValue);
+                    if ( ! is_null($result2) ) {
+                      while ( $row2 = mysqli_fetch_row($result2) ) {
+                        echo "<option value=\"" . $row2[0] . "\">" . $row2[1] . "</option>";
+                      }
+                    }
+                  echo "</select>";
+                  echo "<button type=\"submit\" class=\"btn btn-warning moveButton\">Przenieś</button>";
+                  echo "</form>";
+                  echo "</li>";
                   } else {
                     echo "<li class=\"list-group-item\">
                     <a href=\"" . $row[2] . "\">" . $row[1] . "</a></li>";
