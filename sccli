@@ -1,0 +1,143 @@
+#!/usr/bin/php -d log_errors=On
+<?php
+$ROOT = "/var/www/html";
+include($ROOT . "/library.php");
+include($ROOT . "/db_conf.php");
+
+function listCategories($connection) {
+	$tableName = "categories";
+	$columnScheme = "*";
+	$whereValue = "1=1";
+	$result = dbQuery($connection, $tableName, $columnScheme, $whereValue);
+	if ( ! is_null($result) ) {
+    while ( $row = mysqli_fetch_row($result) ) {
+      echo $row[0] . "\t" . $row[1] . "\n";
+    }
+  } else {
+    echo "Nie znaleziono żadnych kategorii.";
+  }
+}
+
+function listSites($connection, $cateId) {
+  $tableName = "sites";
+  $columnScheme = "id, name";
+  $whereValue = "cateId = " . mysqli_real_escape_string($connection, $cateId);
+  $result = dbQuery($connection, $tableName, $columnScheme, $whereValue);
+  if ( ! is_null($result) ) {
+    while ( $row = mysqli_fetch_row($result) ) {
+      echo $row[0] . "\t" . $row[1] . "\n"; 
+    }
+  }
+}
+
+function listLinks($connection, $cateId) {
+  $tableName = "sites";
+  $columnName = "id,name,href";
+  $whereValue = "cateId = " . mysqli_real_escape_string($connection, $cateId);
+  $result = dbQuery($connection, $tableName, $columnName, $whereValue);
+  if ( ! is_null($result) ) {
+    while ( $row = mysqli_fetch_row($result) ) {
+      echo $row[0] . ". \t" . $row[1] . "\n\t" . $row[2] . "\n\n";
+    }
+  }
+}
+
+function addCategory($connection, $name) {
+  $tableName = "categories";
+  $columnScheme = "name";
+  $setValues = "'" . mysqli_real_escape_string($connection, $name) . "'";
+  $result = dbAdd($connection, $tableName, $columnScheme, $setValues);
+  if ( ! is_null($result) ) {
+    if ( $result == True ) {
+      echo "Kategoria została dodanana!\n";
+    } 
+  }
+}
+
+function addSite($connection, $cateId, $name, $link) {
+  $tableName = "sites";
+  $columnScheme = "cateId,name,href";
+  $setValues = mysqli_real_escape_string($connection, $cateId) . ",'" . mysqli_real_escape_string($connection, $name) . "','" . mysqli_real_escape_string($connection, $link) . "'";
+  $result = dbAdd($connection, $tableName, $columnScheme, $setValues);
+  if ( ! is_null($result) ) {
+    if ( $result == True ) {
+      echo "Dodano stronę do podanej kategorii.\n";
+    }
+  }
+}
+
+function moveSite($connection, $siteId, $newCateId) {
+  $tableName = "sites";
+  $setValue = "cateId = " . mysqli_real_escape_string($connection, $newCateId);
+  $whereValue = "id = " . mysqli_real_escape_string($connection, $siteId);
+  $result = dbUpdate($connection, $tableName, $setValue, $whereValue);
+  if ( ! is_null($result) ) {
+    if ( $result == True )  {
+      echo "Strona została przeniesona do podanej kategorii.\n";
+    }
+  }
+}
+
+function deleteSite($connection, $siteId) {
+  $tableName = "sites";
+  $whereValue = "id = " . mysqli_real_escape_string($connection, $siteId);
+  $result = dbDel($connection, $tableName, $whereValue);
+  if ( ! is_null($result) ) {
+    if ( $result == True ) {
+      echo "Usunięto stronę.\n";
+    }
+  }
+}
+
+
+function deleteCategory($connection, $cateId) {
+  $tableName = "sites";
+  $whereValue = "cateId = " . mysqli_real_escape_string($connection, $cateId);
+  $result = dbDel($connection, $tableName, $whereValue);
+  if ( ! is_null($result) ) {
+    if ( $result == True ) {
+      $tableName = "categories";
+      $whereValue = "id = " . mysqli_real_escape_string($connection, $cateId);
+      $result = dbDel($connection, $tableName, $whereValue);
+      if ( ! is_null($result) ) {
+        if ( $result == True ) {
+          echo "Usunięto kategorię.\n";
+        }
+      } 
+    }
+  }
+}
+
+if ( isset($argv[1]) ) {
+  if ( $argv[1] == "lc" ) { listCategories($connection); }
+  if ( $argv[1] == "ls" ) { listSites($connection, $argv[2]); }
+  if ( $argv[1] == "ll" ) { listLinks($connection, $argv[2]); }
+  if ( $argv[1] == "ac" ) { addCategory($connection, $argv[2]); }
+  if ( $argv[1] == "as" ) { addSite($connection, $argv[2], $argv[3], $argv[4]); }
+  if ( $argv[1] == "ms" ) { moveSite($connection, $argv[2], $argv[3]); }
+  if ( $argv[1] == "ds" ) { deleteSite($connection, $argv[2]); }
+  if ( $argv[1] == "dc" ) { deleteCategory($connection, $argv[2]); }
+} else {
+  if ( isset($_SERVER["SHELL"]) ) {
+    echo "sccli - SiteCatalogue CLI dla katalogu stron\n";
+    echo "morketsmerke.org @ 2024\n";
+    echo "Skrypt wymaga działającej instacji SiteCatalogue.\n";
+    echo "Opcje:\n";
+    echo "\t lc - Wyświetl kategorie.\n";
+    echo "\t ls - Wyświetl zapisane strony - sccli ls <id_kategorii>.\n";
+    echo "\t ll - Wyświetl zapisane strony z odnośnikami - sccli ll <id_kategorii>.\n";
+    echo "\t ac - Dodaj kategorię - sccli ac \"<nazwa_kategorii>\"\n";
+    echo "\t as - Dodaj stronę do wybranej kategorii:\n\t - sccli as <id_kategorii> \"<nazwa_strony>\" \"<link_do_strony>\"\n";
+    echo "\t ms - Przenosi stronę do podanej kategorii:\n\t - sccli ms <id_strony> <id_kategorii>\n";
+    echo "\t ds - Usuwa podaną stronę - sccli ds <id_strony>\n";
+    echo "\t dc - Usuwa podaną kategorię (jeśli są tam strony, też zostaną usunięte):\n\t - sccli dc <id_kategorii>\n";
+    echo "\nJeśli program nie zwróci nic, oznacza to, że pobrano z bazy danych pusty zbiór.\n";
+  } else {
+    echo "
+      <div class=\"alert alert-danger\" role=\"alert\">
+      403 - Dostęp do zawartości strony zabroniony.
+      </div>
+    ";
+  }
+} 
+?>

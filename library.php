@@ -7,7 +7,9 @@ function mysqliResult($connection, $result) {
     }
     return true;
   } else {
-    echo "<script>console.log('Zapytanie nie powiodło się: " . mysqli_error($connection) . "');</script>";
+    if ( ! isset($_SERVER["SHELL"]) ) {
+      echo "<script>console.log('Zapytanie nie powiodło się: " . mysqli_error($connection) . "');</script>";
+    }
     return false;
   }
 }
@@ -20,7 +22,9 @@ function dbQuery($connection, $tableName, $columnScheme, $whereValue, $debug=0) 
   if ( mysqliResult($connection, $result) ) {
     return $result;
   } else {
-    echo "<script>console.log('Pobranie danych z bazy jest niemożliwe');</script>";
+    if ( ! isset($_SERVER["SHELL"]) ) {
+      echo "<script>console.log('Pobranie danych z bazy jest niemożliwe');</script>";
+    }
   }
 
 }
@@ -37,7 +41,9 @@ function dbUpdate($connection, $tableName, $setValue, $whereValue) {
   if ( mysqliResult($connection, $result) ) {
     return $result;
   } else {
-    echo "<script>console.log('Zmiana danych w bazie jest niemożliwa');</script>";
+    if ( ! isset($_SERVER["SHELL"]) ) {
+      echo "<script>console.log('Zmiana danych w bazie jest niemożliwa');</script>";
+    }
   }
 
 }
@@ -49,7 +55,9 @@ function dbAdd($connection, $tableName, $columnScheme, $setValues) {
   if ( mysqliResult($connection, $result) ) {
     return $result;
   } else {
-    echo "<script>console.log('Dodanie danych do bazy jest niemożliwa');</script>";
+    if ( ! isset($_SERVER["SHELL"]) ) {
+      echo "<script>console.log('Dodanie danych do bazy jest niemożliwa');</script>";
+    }
   }
 }
 
@@ -60,7 +68,9 @@ function dbDel($connection, $tableName, $whereValue) {
   if ( mysqliResult($connection, $result) ) {
     return $result;
   } else {
-    echo "<script>console.log('Usunięcie danych z bazy jest niemożliwa');</script>";
+    if ( ! isset($_SERVER["SHELL"]) ) {
+      echo "<script>console.log('Usunięcie danych z bazy jest niemożliwa');</script>";
+    }
   }
 }
 
